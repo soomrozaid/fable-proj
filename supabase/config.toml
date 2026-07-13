@@ -1,0 +1,16 @@
+# Supabase project config (pushed with `supabase config push`).
+# Only auth settings are managed here; everything else stays remote-managed.
+project_id = "mokpddtzkmaxlbjnejvf"
+
+[auth]
+site_url = "https://scanstone.vercel.app"
+additional_redirect_urls = [
+  "https://scanstone.vercel.app/**",
+  "http://localhost:3000/**",
+]
+
+[auth.email]
+enable_signup = true
+# Instant activation: the hosted SMTP allowance (~2 emails/hour) cannot carry
+# signup confirmations. Re-enable once custom SMTP is configured (HUMAN_ACTIONS).
+enable_confirmations = false
