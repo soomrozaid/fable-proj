@@ -1,0 +1,126 @@
+[
+  {
+    "slug": "do-qr-codes-expire",
+    "collection": "blog",
+    "title": "Do QR codes expire? The honest answer",
+    "description": "Static QR codes never expire; dynamic ones can be switched off. Here's the difference, why it decides whether your printed code survives, and how to tell which one you have.",
+    "category": "Explainer",
+    "pillar": 1,
+    "primaryKeyword": "do qr codes expire",
+    "intent": "informational",
+    "outline": [
+      "Answer in one line: static codes can't expire, dynamic codes can be turned off.",
+      "Why static is permanent (content lives in the pattern).",
+      "Why dynamic depends on a redirect server that a company controls.",
+      "The trial trap: 'free' codes that are really dynamic codes on a 14-day timer.",
+      "How to check which one you have (decode it; look for a generator domain).",
+      "What to do if you already printed one that's dynamic."
+    ],
+    "internalLinks": ["/qr-code-generator", "/blog/qr-code-subscription-trap", "/pricing"],
+    "autonomy": "review",
+    "status": "queued"
+  },
+  {
+    "slug": "qr-code-stopped-working-how-to-fix",
+    "collection": "blog",
+    "title": "Your QR code stopped working — here's how to fix it",
+    "description": "If a printed QR code suddenly hits a paywall or a dead page, it was almost certainly a dynamic code whose trial lapsed. Here's what happened and the fastest ways to recover.",
+    "category": "Rescue",
+    "pillar": 1,
+    "primaryKeyword": "qr code stopped working",
+    "intent": "problem",
+    "outline": [
+      "First, diagnose: scan it and read what it actually points to.",
+      "If it lands on a paywall/upgrade page: it's a lapsed dynamic-code trial.",
+      "Option 1: pay the ransom once, then migrate before renewal.",
+      "Option 2: replace with a free static code (if the destination is fixed).",
+      "Option 3: move to a dynamic code whose redirect never expires.",
+      "How to avoid it next time (the 5-second test)."
+    ],
+    "internalLinks": ["/qr-code-generator", "/blog/qr-code-subscription-trap"],
+    "autonomy": "review",
+    "status": "queued"
+  },
+  {
+    "slug": "static-vs-dynamic-qr-codes",
+    "collection": "blog",
+    "title": "Static vs dynamic QR codes: which do you actually need?",
+    "description": "Static codes are free forever and can't be edited; dynamic codes are editable and trackable but depend on a server. A plain decision guide, with the one question that settles it.",
+    "category": "Guide",
+    "pillar": 4,
+    "primaryKeyword": "static vs dynamic qr code",
+    "intent": "informational",
+    "outline": [
+      "The one-line difference and the one-question decision.",
+      "Static: how it works, when it's the right call, why it's free.",
+      "Dynamic: editing after print + analytics, and the catch (a middleman).",
+      "A short comparison table.",
+      "The trap to avoid: dynamic sold as 'free'.",
+      "Recommendation by use case (menu, flyer, wifi, campaign)."
+    ],
+    "internalLinks": ["/qr-code-generator", "/pricing", "/blog/qr-code-subscription-trap"],
+    "autonomy": "review",
+    "status": "queued"
+  },
+  {
+    "slug": "free-qr-code-generator-no-expiration",
+    "collection": "blog",
+    "title": "Free QR code generator with no expiration — how it actually works",
+    "description": "A genuinely free QR code needs no account and never expires, because the data is encoded in the pattern itself. Here's how to make one and how to spot the fake-free ones.",
+    "category": "Explainer",
+    "pillar": 1,
+    "primaryKeyword": "free qr code generator no expiration",
+    "intent": "commercial",
+    "outline": [
+      "What 'free forever' actually requires (a static code, no account).",
+      "Why the pattern-encoded data can't be switched off.",
+      "How the fake-free generators work (trial-wrapped dynamic codes).",
+      "Step by step: make a permanent free code.",
+      "When you'd legitimately want to pay (editing, analytics) and what to demand."
+    ],
+    "internalLinks": ["/qr-code-generator", "/blog/qr-code-subscription-trap", "/pricing"],
+    "autonomy": "review",
+    "status": "queued"
+  },
+  {
+    "slug": "how-to-make-a-qr-code-for-a-restaurant-menu",
+    "collection": "blog",
+    "title": "How to make a QR code for a restaurant menu (free, no expiration)",
+    "description": "A step-by-step guide to a menu QR code that won't hold your printing hostage: static vs dynamic for menus, the right size and error correction, and how to test before you print.",
+    "category": "Guide",
+    "pillar": 2,
+    "primaryKeyword": "qr code for restaurant menu",
+    "intent": "transactional",
+    "outline": [
+      "Static or dynamic for a menu? (dynamic if the menu changes, but only with a no-shutoff guarantee).",
+      "Step by step: create it, point it at your menu page or PDF.",
+      "Size and placement on table tents and printed menus.",
+      "Error correction level for restaurant conditions (spills, wear).",
+      "Test before printing 500 (the 30-second check).",
+      "Avoid the trial trap that paywalls your table tents."
+    ],
+    "internalLinks": ["/qr-code-generator", "/pricing", "/blog/static-vs-dynamic-qr-codes"],
+    "autonomy": "review",
+    "status": "queued"
+  },
+  {
+    "slug": "is-qr-code-generator-com-free",
+    "collection": "blog",
+    "title": "Is qr-code-generator.com free? What the plan really means",
+    "description": "The most-marketed QR generator advertises 'free' codes. Here's what actually happens after you print one, what it costs, and the honest alternative.",
+    "category": "Comparison",
+    "pillar": 4,
+    "primaryKeyword": "is qr-code-generator.com free",
+    "intent": "commercial",
+    "outline": [
+      "Short answer: static previews are free; the useful codes are trial-wrapped dynamic codes.",
+      "What the reviews report (1.6 star Trustpilot, ~£130/yr, auto-renewal).",
+      "The mechanism that makes 'free' turn into a bill.",
+      "How to use it safely if you already have (the 5-second test).",
+      "The alternative: static free forever + a covenant on dynamic codes."
+    ],
+    "internalLinks": ["/blog/qr-code-subscription-trap", "/qr-code-generator", "/pricing"],
+    "autonomy": "review",
+    "status": "queued"
+  }
+]

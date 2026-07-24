@@ -1,14 +1,14 @@
 import "server-only";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import registry from "../../content/registry.json";
 
 /**
- * Content registry. The source of truth for published editorial content.
- *
- * Each entry has a matching markdown body at
+ * Content registry. The source of truth for published editorial content lives in
+ * content/registry.json (so the automation pipeline can append to it without
+ * parsing TypeScript). Each entry has a matching markdown body at
  *   content/<collection>/<slug>.md
- * The automation pipeline appends an entry here and drops the markdown file;
- * everything else (routing, sitemap, indexes, JSON-LD) derives from this list.
+ * Everything else (routing, sitemap, indexes, JSON-LD) derives from this list.
  */
 
 export type Collection = "blog" | "guides";
@@ -29,18 +29,7 @@ export interface DocMeta {
   featured?: boolean;
 }
 
-export const DOCS: DocMeta[] = [
-  {
-    slug: "qr-code-subscription-trap",
-    collection: "blog",
-    title: "The QR code subscription trap: an investigation",
-    description:
-      "The most-marketed QR generators are rated 1–2 stars. The reason is a single design choice — and it costs people who print their codes hundreds of dollars. Here's how it works, and how to never fall for it.",
-    date: "2026-07-24",
-    category: "Investigation",
-    featured: true,
-  },
-];
+export const DOCS: DocMeta[] = registry as DocMeta[];
 
 export function docsIn(collection: Collection): DocMeta[] {
   return DOCS.filter((d) => d.collection === collection).sort((a, b) =>

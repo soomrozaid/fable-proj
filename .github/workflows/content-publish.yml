@@ -1,0 +1,77 @@
+name: content-publish
+
+# Drafts the next queued post with an LLM, runs it through the quality gate, and
+# publishes it (moves the markdown in, updates the registry, notifies search
+# engines), then commits so Vercel deploys. Runs Mon/Wed/Fri; also on demand.
+#
+# Turn it on with ONE master switch (a deliberate on/off for autopublish):
+#   repo VARIABLE  CONTENT_PIPELINE = true
+# plus repo SECRETS:
+#   ANTHROPIC_API_KEY  (or AI_GATEWAY_API_KEY)   — required to draft
+#   GCP_SA_KEY          — the Search Console service-account JSON (for indexing)
+# While CONTENT_PIPELINE is unset, scheduled runs no-op (no noise).
+#
+# Autonomy: this commits straight to main (autopublish, gated by lint). To switch
+# to review-mode, push to a branch and open a PR instead of committing to main.
+
+on:
+  schedule:
+    - cron: "0 14 * * 1,3,5"
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Specific queue slug to draft + publish (optional)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ vars.CONTENT_PIPELINE == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+
+      - name: Write Search Console key (if provided)
+        if: ${{ secrets.GCP_SA_KEY != '' }}
+        run: printf '%s' "$GCP_SA_KEY" > "$RUNNER_TEMP/sa.json"
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Draft next post
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+          SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          if [ -n "$SLUG" ]; then
+            node scripts/content/draft.mjs --slug "$SLUG"
+          else
+            node scripts/content/draft.mjs --count 1
+          fi
+
+      - name: Publish (quality gate + registry + IndexNow + sitemap)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: node scripts/content/publish.mjs --all
+
+      - name: Commit & push
+        run: |
+          if [ -n "$(git status --porcelain content/)" ]; then
+            git config user.name "scanstone-bot"
+            git config user.email "bot@scanstone.ca"
+            git add -A content/
+            git commit -m "content: publish scheduled post [skip ci]"
+            git push
+          else
+            echo "nothing new to publish"
+          fi

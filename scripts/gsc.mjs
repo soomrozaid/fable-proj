@@ -15,6 +15,7 @@
 
 import { readFileSync } from "node:fs";
 import { createSign } from "node:crypto";
+import { fileURLToPath } from "node:url";
 
 const KEY_FILE =
   process.env.GOOGLE_APPLICATION_CREDENTIALS ||
@@ -31,7 +32,7 @@ function b64url(buf) {
     .replace(/=+$/, "");
 }
 
-async function accessToken() {
+export async function accessToken() {
   const key = JSON.parse(readFileSync(KEY_FILE, "utf8"));
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: "RS256", typ: "JWT" };
@@ -61,7 +62,7 @@ async function accessToken() {
   return json.access_token;
 }
 
-async function api(path, { method = "GET", body, token } = {}) {
+export async function api(path, { method = "GET", body, token } = {}) {
   const res = await fetch(`${API}${path}`, {
     method,
     headers: {
@@ -156,7 +157,11 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e.message || e);
-  process.exit(1);
-});
+// Only run the CLI when executed directly, so other scripts can import
+// accessToken/api without triggering it.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e) => {
+    console.error(e.message || e);
+    process.exit(1);
+  });
+}

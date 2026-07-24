@@ -1,0 +1,60 @@
+name: content-loop
+
+# The weekly brain: pulls Search Console performance, files striking-distance
+# queries and impression-gaps as candidates in content/queue.json, and emails a
+# digest via Resend. Commits the queue so new candidates persist.
+#
+# Turn it on with the same master switch as content-publish:
+#   repo VARIABLE  CONTENT_PIPELINE = true
+# plus repo SECRETS:
+#   GCP_SA_KEY         — Search Console service-account JSON (required)
+#   RESEND_API_KEY     — to email the digest (optional; otherwise logged)
+#   RESEND_EMAIL_DOMAIN, DIGEST_TO — sender domain + recipient (optional)
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content
+  cancel-in-progress: false
+
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    if: ${{ vars.CONTENT_PIPELINE == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+
+      - name: Write Search Console key
+        run: printf '%s' "$GCP_SA_KEY" > "$RUNNER_TEMP/sa.json"
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Run the loop (GSC pull + candidates + digest)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_EMAIL_DOMAIN: ${{ secrets.RESEND_EMAIL_DOMAIN }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+        run: node scripts/content/loop.mjs
+
+      - name: Commit queue changes
+        run: |
+          if [ -n "$(git status --porcelain content/queue.json)" ]; then
+            git config user.name "scanstone-bot"
+            git config user.email "bot@scanstone.ca"
+            git add content/queue.json
+            git commit -m "content: file new keyword candidates [skip ci]"
+            git push
+          else
+            echo "no new candidates"
+          fi
