@@ -3,8 +3,10 @@
 project_id = "mokpddtzkmaxlbjnejvf"
 
 [auth]
-site_url = "https://scanstone.vercel.app"
+site_url = "https://www.scanstone.ca"
 additional_redirect_urls = [
+  "https://www.scanstone.ca/**",
+  "https://scanstone.ca/**",
   "https://scanstone.vercel.app/**",
   "http://localhost:3000/**",
 ]

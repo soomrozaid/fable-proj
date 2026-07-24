@@ -25,3 +25,6 @@ blob-report/
 *.pem
 npm-debug.log*
 .playwright-mcp/
+
+.dev
+scanstone-503008-96ce486f79f4.json

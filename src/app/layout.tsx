@@ -31,6 +31,33 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
+function OrganizationJsonLd() {
+  const base = envClient.APP_URL;
+  const data = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Scanstone",
+      url: base,
+      logo: `${base}/icon`,
+      description:
+        "A QR code generator whose codes keep working even if you stop paying: free static codes that never expire, and dynamic codes with a written no-shutoff covenant.",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Scanstone",
+      url: base,
+    },
+  ];
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -41,6 +68,7 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} grain min-h-screen`}
       >
+        <OrganizationJsonLd />
         {children}
         <Analytics />
       </body>

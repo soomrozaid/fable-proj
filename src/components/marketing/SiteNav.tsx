@@ -25,6 +25,9 @@ export async function SiteNav() {
           <Link href="/demo" className="hover:text-ink">
             Live demo
           </Link>
+          <Link href="/blog" className="hover:text-ink">
+            Blog
+          </Link>
           <Link href="/pricing" className="hover:text-ink">
             Pricing
           </Link>

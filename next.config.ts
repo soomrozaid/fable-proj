@@ -16,6 +16,12 @@ const publicEnv = {
 const nextConfig: NextConfig = {
   env: publicEnv,
   poweredByHeader: false,
+  // The blog article route reads content/<collection>/<slug>.md via fs at request
+  // time (the marketing segment is dynamic because SiteNav reads auth cookies).
+  // Next can't trace the dynamic path, so force the content dir into the bundle.
+  outputFileTracingIncludes: {
+    "/blog/[slug]": ["./content/**/*.md"],
+  },
   async headers() {
     return [
       {

@@ -1,16 +1,13 @@
 import type { MetadataRoute } from "next";
 import { envClient } from "@/config/env.client";
+import { docsIn } from "@/lib/content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = envClient.APP_URL;
   const now = new Date();
-  return [
-    {
-      url: `${base}/`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
+
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     {
       url: `${base}/qr-code-generator`,
       lastModified: now,
@@ -36,6 +33,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${base}/blog`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
       url: `${base}/demo`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -54,4 +57,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.2,
     },
   ];
+
+  const blogPosts: MetadataRoute.Sitemap = docsIn("blog").map((doc) => ({
+    url: `${base}/blog/${doc.slug}`,
+    lastModified: new Date(`${doc.updated ?? doc.date}T00:00:00Z`),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...blogPosts];
 }
