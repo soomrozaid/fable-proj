@@ -1,0 +1,33 @@
+name: usage-digest
+
+# Daily "someone actually used it" ping: counts real activity in Supabase
+# (signups, dynamic codes, scans) over the last 24h/7d and emails it via Resend.
+# Read-only; nothing is committed.
+#
+# Turn it on with the automation master switch + secrets (GitHub repo settings):
+#   variable: CONTENT_PIPELINE = true
+#   secrets:  SUPABASE_URL, SUPABASE_SECRET_KEY (service key),
+#             RESEND_API_KEY, RESEND_EMAIL_DOMAIN, DIGEST_TO
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    if: ${{ vars.CONTENT_PIPELINE == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Send usage digest
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_EMAIL_DOMAIN: ${{ secrets.RESEND_EMAIL_DOMAIN }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+        run: node scripts/usage-digest.mjs

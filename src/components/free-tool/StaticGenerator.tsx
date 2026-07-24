@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { QRPreview } from "@/components/qr/QRPreview";
 import { DesignControls } from "@/components/qr/DesignControls";
+import { track } from "@vercel/analytics";
 import { downloadPng, downloadSvg } from "@/components/qr/download";
 import { wifiPayload, vcardPayload } from "@/lib/qr/payloads";
 import { isScannableCombo } from "@/lib/qr/contrast";
@@ -244,6 +245,7 @@ export function StaticGenerator({
                 setDownloadError(null);
                 try {
                   await downloadPng(payload, design, "scanstone-qr");
+                  track("qr_downloaded", { format: "png", mode });
                 } catch {
                   setDownloadError("Download failed — try another browser.");
                 }
@@ -259,6 +261,7 @@ export function StaticGenerator({
                 setDownloadError(null);
                 try {
                   downloadSvg(payload, design, "scanstone-qr");
+                  track("qr_downloaded", { format: "svg", mode });
                 } catch {
                   setDownloadError("Download failed — try another browser.");
                 }

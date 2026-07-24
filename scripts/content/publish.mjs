@@ -82,7 +82,7 @@ async function resubmitSitemapToGoogle() {
   }
 }
 
-async function publishItem(item, { dryRun }) {
+async function publishItem(item, { dryRun, notify }) {
   const draftPath = path.join(DRAFTS_DIR, `${item.slug}.md`);
   let body;
   try {
@@ -135,14 +135,19 @@ async function publishItem(item, { dryRun }) {
   await saveQueue(queue);
 
   log(`published ${item.slug}`);
-  await pingIndexNow([url, `${SITE}/${item.collection}`, `${SITE}/sitemap.xml`]);
-  await resubmitSitemapToGoogle();
+  if (notify) {
+    await pingIndexNow([url, `${SITE}/${item.collection}`, `${SITE}/sitemap.xml`]);
+    await resubmitSitemapToGoogle();
+  } else {
+    log("  (--no-notify: skipping IndexNow/GSC until the content is live)");
+  }
   return url;
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
+  const notify = !args.includes("--no-notify");
   const queue = await loadQueue();
 
   let targets;
@@ -157,7 +162,7 @@ async function main() {
   }
   if (!targets.length) die("nothing to publish (no drafted items)");
 
-  for (const item of targets) await publishItem(item, { dryRun });
+  for (const item of targets) await publishItem(item, { dryRun, notify });
 }
 
 main().catch((e) => die(e.stack || String(e)));

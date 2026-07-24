@@ -11,8 +11,11 @@ name: content-publish
 #   GCP_SA_KEY          — the Search Console service-account JSON (for indexing)
 # While CONTENT_PIPELINE is unset, scheduled runs no-op (no noise).
 #
-# Autonomy: this commits straight to main (autopublish, gated by lint). To switch
-# to review-mode, push to a branch and open a PR instead of committing to main.
+# Autonomy (default is the safe one):
+#   - By default this opens a PR you review + merge (Vercel deploys on merge).
+#   - Set variable CONTENT_AUTOPUBLISH = true to commit straight to main instead
+#     (fully hands-off; still gated by the quality lint). Recommended: run in PR
+#     mode for ~2 weeks, then flip to autopublish once you trust the output.
 
 on:
   schedule:
@@ -25,6 +28,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: content
@@ -59,19 +63,38 @@ jobs:
             node scripts/content/draft.mjs --count 1
           fi
 
-      - name: Publish (quality gate + registry + IndexNow + sitemap)
+      - name: Publish (quality gate + registry; notify only when autopublishing)
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
-        run: node scripts/content/publish.mjs --all
-
-      - name: Commit & push
+          AUTOPUBLISH: ${{ vars.CONTENT_AUTOPUBLISH }}
         run: |
-          if [ -n "$(git status --porcelain content/)" ]; then
-            git config user.name "scanstone-bot"
-            git config user.email "bot@scanstone.ca"
+          if [ "$AUTOPUBLISH" = "true" ]; then
+            node scripts/content/publish.mjs --all
+          else
+            node scripts/content/publish.mjs --all --no-notify
+          fi
+
+      - name: Ship (autopublish to main, or open a review PR)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUTOPUBLISH: ${{ vars.CONTENT_AUTOPUBLISH }}
+        run: |
+          if [ -z "$(git status --porcelain content/)" ]; then
+            echo "nothing new to publish"; exit 0
+          fi
+          git config user.name "scanstone-bot"
+          git config user.email "bot@scanstone.ca"
+          if [ "$AUTOPUBLISH" = "true" ]; then
             git add -A content/
             git commit -m "content: publish scheduled post [skip ci]"
             git push
           else
-            echo "nothing new to publish"
+            BRANCH="content/auto-$(date +%Y%m%d-%H%M%S)"
+            git checkout -b "$BRANCH"
+            git add -A content/
+            git commit -m "content: new post ready for review"
+            git push -u origin "$BRANCH"
+            gh pr create --base main --head "$BRANCH" \
+              --title "Content: new post ready for review" \
+              --body "Auto-drafted and passed the quality gate. Review and merge to publish — Vercel deploys on merge."
           fi
