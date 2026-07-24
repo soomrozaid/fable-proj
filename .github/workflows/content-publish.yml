@@ -45,8 +45,7 @@ jobs:
           node-version: 24
       - run: npm ci
 
-      - name: Write Search Console key (if provided)
-        if: ${{ secrets.GCP_SA_KEY != '' }}
+      - name: Write Search Console key (empty if the secret is unset — harmless)
         run: printf '%s' "$GCP_SA_KEY" > "$RUNNER_TEMP/sa.json"
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
